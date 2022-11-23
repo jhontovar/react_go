@@ -1,40 +1,64 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Row, Col, Form, Button, Spinner } from "react-bootstrap"
 
+import {  toast } from 'react-toastify';
 import "./SignUpForm.scss"
+import { values, size } from "lodash";
+var array = require('lodash');
 
 export default function SignUpForm(props) {
     const { setShowModal } = props
+    const [formData, setFormData] = useState(initialFormValue())
 
     const onSubmit = e => {
         e.preventDefault();
-        setShowModal(false);
+        //setShowModal(false);
+        let validCount = 0;
+        values(formData).some(value =>{
+            value && validCount++;
+            return null;
+        })
+
+        if (validCount !== size(formData)){
+            toast.warning("Debe diligenciar todos los campos")
+        }else{
+            toast.success("formulario enviado")
+        }
+    }
+
+    const onChange = e => {
+        setFormData({ ...formData, [e.target.name]: e.target.value })
     }
 
     return (
         <div className='sign-up-form'>
             <h2>Crea tu cuenta</h2>
-            <Form onSubmit={onSubmit}>
+            <Form onSubmit={onSubmit} onChange={onChange}>
                 <Form.Group className='form-group'>
                     <Row>
                         <Col>
-                            <Form.Control type='text' placeholder='Nombre' />
+                            <Form.Control type='text' placeholder='Nombre' name='name'
+                                defaultValue={formData.name} />
                         </Col>
                         <Col>
-                            <Form.Control type='text' placeholder='Apellido' />
+                            <Form.Control type='text' placeholder='Apellido' name='lastName'
+                                defaultValue={formData.lastName} />
                         </Col>
                     </Row>
                 </Form.Group>
                 <Form.Group className='form-group'>
-                    <Form.Control type='email' placeholder='Email'></Form.Control>
+                    <Form.Control type='email' placeholder='Email' name='email'
+                        defaultValue={formData.email} />
                 </Form.Group>
                 <Form.Group className='form-group'>
                     <Row>
                         <Col>
-                            <Form.Control type="password" placeholder='contraseña'></Form.Control>
+                            <Form.Control type="password" placeholder='contraseña' name='password'
+                                defaultValue={formData.password}></Form.Control>
                         </Col>
                         <Col>
-                            <Form.Control type="password" placeholder='Repetir Contraseña'></Form.Control>
+                            <Form.Control type="password" placeholder='Repetir Contraseña' name='repeatPassword'
+                                defaultValue={formData.repeatPassword}></Form.Control>
                         </Col>
                     </Row>
                 </Form.Group>
@@ -45,4 +69,14 @@ export default function SignUpForm(props) {
             </Form>
         </div>
     )
+}
+
+function initialFormValue() {
+    return {
+        name: "",
+        lastName: "",
+        email: "",
+        password: "",
+        repeatPassword: ""
+    }
 }
