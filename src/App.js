@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import SignInSignUp from "./page/SignInSignUp"
 import { AuthContext } from "./util/contexts"
 import { isUserLogin } from "./api/auth"
+import Routing from "./routers/Routing"
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -18,10 +19,9 @@ export default function App() {
 
   if (!loadUser) { return null }
 
-
   return (<AuthContext.Provider value={user}>
     {user ?
-      (<h1>Estas logueado</h1>) : (<div><SignInSignUp setRefreshCheckLogin={setRefreshCheckLogin} /></div>)
+      (<Routing />) : (<div><SignInSignUp setRefreshCheckLogin={setRefreshCheckLogin} /></div>)
     }
     <ToastContainer
       position="top-right"
