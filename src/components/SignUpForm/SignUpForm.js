@@ -2,13 +2,16 @@ import React, { useState } from 'react'
 import { Row, Col, Form, Button, Spinner } from "react-bootstrap"
 import { isEmailValid } from "../../util/validations"
 import { toast } from 'react-toastify';
-import "./SignUpForm.scss"
 import { values, size } from "lodash";
-var array = require('lodash');
+
+import { signUpApi } from "../../api/auth"
+
+import "./SignUpForm.scss"
 
 export default function SignUpForm(props) {
-    const { setShowModal } = props
-    const [formData, setFormData] = useState(initialFormValue())
+    const { setShowModal } = props;
+    const [formData, setFormData] = useState(initialFormValue());
+    const [signUoLoading, setsignUoLoading] = useState(false)
 
     const onSubmit = e => {
         e.preventDefault();
@@ -29,9 +32,21 @@ export default function SignUpForm(props) {
             } else if (size(formData.password) < 6) {
                 toast.warning("Las contraseñas deben tener mas de 6 caracteres");
             } else {
-                toast.success("formulario OK.");
+                setsignUoLoading(true);
+                signUpApi(formData).then(response => {
+                    if (response.code) {
+                        toast.warning(response.message)
+                    } else {
+                        toast.success("EL registro ha sido correcto");
+                        setShowModal(false)
+                        setFormData(initialFormValue())
+                    }
+                }).catch(() => {
+                    toast.error("Error en el servidor");
+                }).finally(() => {
+                    setsignUoLoading(false)
+                });
             }
-
         }
     }
 
@@ -73,7 +88,7 @@ export default function SignUpForm(props) {
                 </Form.Group>
 
                 <Button variant='primary' type='submit'>
-                    Registrate
+                    {signUoLoading ? <Spinner animation='border' /> : "Registrate"}
                 </Button>
             </Form>
         </div>
